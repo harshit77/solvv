@@ -11,34 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as PostsImport } from './routes/posts'
-import { Route as LayoutImport } from './routes/_layout'
-import { Route as PostsIndexImport } from './routes/posts.index'
-import { Route as LayoutIndexImport } from './routes/_layout.index'
+import { Route as LayoutRouteImport } from './routes/_layout/route'
+import { Route as LayoutIndexImport } from './routes/_layout/index'
 
 // Create/Update Routes
 
-const PostsRoute = PostsImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LayoutRoute = LayoutImport.update({
+const LayoutRouteRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRoute,
-} as any)
-
-const PostsIndexRoute = PostsIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PostsRoute,
 } as any)
 
 const LayoutIndexRoute = LayoutIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => LayoutRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -49,14 +35,7 @@ declare module '@tanstack/react-router' {
       id: '/_layout'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof LayoutImport
-      parentRoute: typeof rootRoute
-    }
-    '/posts': {
-      id: '/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof PostsImport
+      preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRoute
     }
     '/_layout/': {
@@ -64,78 +43,55 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexImport
-      parentRoute: typeof LayoutImport
-    }
-    '/posts/': {
-      id: '/posts/'
-      path: '/'
-      fullPath: '/posts/'
-      preLoaderRoute: typeof PostsIndexImport
-      parentRoute: typeof PostsImport
+      parentRoute: typeof LayoutRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface LayoutRouteChildren {
+interface LayoutRouteRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
-const LayoutRouteChildren: LayoutRouteChildren = {
+const LayoutRouteRouteChildren: LayoutRouteRouteChildren = {
   LayoutIndexRoute: LayoutIndexRoute,
 }
 
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
-
-interface PostsRouteChildren {
-  PostsIndexRoute: typeof PostsIndexRoute
-}
-
-const PostsRouteChildren: PostsRouteChildren = {
-  PostsIndexRoute: PostsIndexRoute,
-}
-
-const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
+const LayoutRouteRouteWithChildren = LayoutRouteRoute._addFileChildren(
+  LayoutRouteRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
-  '': typeof LayoutRouteWithChildren
-  '/posts': typeof PostsRouteWithChildren
+  '': typeof LayoutRouteRouteWithChildren
   '/': typeof LayoutIndexRoute
-  '/posts/': typeof PostsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof LayoutIndexRoute
-  '/posts': typeof PostsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_layout': typeof LayoutRouteWithChildren
-  '/posts': typeof PostsRouteWithChildren
+  '/_layout': typeof LayoutRouteRouteWithChildren
   '/_layout/': typeof LayoutIndexRoute
-  '/posts/': typeof PostsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/posts' | '/' | '/posts/'
+  fullPaths: '' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/posts'
-  id: '__root__' | '/_layout' | '/posts' | '/_layout/' | '/posts/'
+  to: '/'
+  id: '__root__' | '/_layout' | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  LayoutRoute: typeof LayoutRouteWithChildren
-  PostsRoute: typeof PostsRouteWithChildren
+  LayoutRouteRoute: typeof LayoutRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRoute: LayoutRouteWithChildren,
-  PostsRoute: PostsRouteWithChildren,
+  LayoutRouteRoute: LayoutRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -148,29 +104,18 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_layout",
-        "/posts"
+        "/_layout"
       ]
     },
     "/_layout": {
-      "filePath": "_layout.tsx",
+      "filePath": "_layout/route.tsx",
       "children": [
         "/_layout/"
       ]
     },
-    "/posts": {
-      "filePath": "posts.tsx",
-      "children": [
-        "/posts/"
-      ]
-    },
     "/_layout/": {
-      "filePath": "_layout.index.tsx",
+      "filePath": "_layout/index.tsx",
       "parent": "/_layout"
-    },
-    "/posts/": {
-      "filePath": "posts.index.tsx",
-      "parent": "/posts"
     }
   }
 }
