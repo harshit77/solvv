@@ -11,87 +11,151 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LayoutRouteImport } from './routes/_layout/route'
-import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as SignupImport } from './routes/signup'
+import { Route as SigninImport } from './routes/signin'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as IndexImport } from './routes/index'
+import { Route as AuthenticatedAppImport } from './routes/_authenticated/app'
 
 // Create/Update Routes
 
-const LayoutRouteRoute = LayoutRouteImport.update({
-  id: '/_layout',
+const SignupRoute = SignupImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutIndexRoute = LayoutIndexImport.update({
+const SigninRoute = SigninImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutRouteRoute,
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedAppRoute = AuthenticatedAppImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof LayoutRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/_layout/': {
-      id: '/_layout/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexImport
-      parentRoute: typeof LayoutRouteImport
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninImport
+      parentRoute: typeof rootRoute
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppImport
+      parentRoute: typeof AuthenticatedImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface LayoutRouteRouteChildren {
-  LayoutIndexRoute: typeof LayoutIndexRoute
+interface AuthenticatedRouteChildren {
+  AuthenticatedAppRoute: typeof AuthenticatedAppRoute
 }
 
-const LayoutRouteRouteChildren: LayoutRouteRouteChildren = {
-  LayoutIndexRoute: LayoutIndexRoute,
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAppRoute: AuthenticatedAppRoute,
 }
 
-const LayoutRouteRouteWithChildren = LayoutRouteRoute._addFileChildren(
-  LayoutRouteRouteChildren,
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
-  '': typeof LayoutRouteRouteWithChildren
-  '/': typeof LayoutIndexRoute
+  '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteWithChildren
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/app': typeof AuthenticatedAppRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof LayoutIndexRoute
+  '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteWithChildren
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/app': typeof AuthenticatedAppRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_layout': typeof LayoutRouteRouteWithChildren
-  '/_layout/': typeof LayoutIndexRoute
+  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/app': typeof AuthenticatedAppRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/'
+  fullPaths: '/' | '' | '/signin' | '/signup' | '/app'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/_layout' | '/_layout/'
+  to: '/' | '' | '/signin' | '/signup' | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/signin'
+    | '/signup'
+    | '/_authenticated/app'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  LayoutRouteRoute: typeof LayoutRouteRouteWithChildren
+  IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  SigninRoute: typeof SigninRoute
+  SignupRoute: typeof SignupRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRouteRoute: LayoutRouteRouteWithChildren,
+  IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  SigninRoute: SigninRoute,
+  SignupRoute: SignupRoute,
 }
 
 export const routeTree = rootRoute
@@ -104,18 +168,30 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_layout"
+        "/",
+        "/_authenticated",
+        "/signin",
+        "/signup"
       ]
     },
-    "/_layout": {
-      "filePath": "_layout/route.tsx",
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/_authenticated": {
+      "filePath": "_authenticated.tsx",
       "children": [
-        "/_layout/"
+        "/_authenticated/app"
       ]
     },
-    "/_layout/": {
-      "filePath": "_layout/index.tsx",
-      "parent": "/_layout"
+    "/signin": {
+      "filePath": "signin.tsx"
+    },
+    "/signup": {
+      "filePath": "signup.tsx"
+    },
+    "/_authenticated/app": {
+      "filePath": "_authenticated/app.tsx",
+      "parent": "/_authenticated"
     }
   }
 }

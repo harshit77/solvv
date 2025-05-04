@@ -8,6 +8,20 @@ import {
 } from '@tanstack/react-router'
 
 import appCss from "@/styles/app.css?url"
+import { createServerFn } from '@tanstack/react-start'
+import { getSupabaseServerClient } from '@/utlis/supabase/server'
+
+
+const fetchUser= createServerFn().handler(async()=>{
+  const supabase= getSupabaseServerClient();
+  const {data}= await supabase.auth.getUser();
+  if(!data.user?.email) {
+    return null
+  }
+  return {
+   email: data.user.email
+  }
+})
 
 export const Route = createRootRoute({
   head: () => ({
@@ -28,6 +42,12 @@ export const Route = createRootRoute({
       href:appCss
     }]
   }),
+  beforeLoad: async()=>{
+    const user= await fetchUser();
+    return {
+      user
+    }
+  },
   component: RootComponent,
 })
 
@@ -41,7 +61,7 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html>
+    <html suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
